@@ -5,10 +5,15 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(bodyParser.json());
 
-const dbPath = path.join(__dirname, 'database.sqlite');
+const dbPath =
+  process.env.NODE_ENV === "production"
+    ? "/data/database.sqlite"
+    : path.join(__dirname, "database.sqlite");
 const db = new sqlite3.Database(dbPath);
 
 // Initialize DB schema
@@ -115,7 +120,7 @@ app.post('/api/content', (req, res) => {
   });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
